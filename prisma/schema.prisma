@@ -1,0 +1,304 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+enum Active {
+  BLOCK
+  PENDING
+  ACTIVE
+}
+
+enum Role {
+  USER
+  SHOP
+  ADMIN
+}
+
+enum Rank {
+  BRONZE
+  SIRVEL
+  GOLD
+  DIAMOND
+}
+
+enum StatusNotification {
+  SEEN
+  UNREAD
+}
+
+enum StatusAddress {
+  BLOCK
+  ACTIVE
+}
+//USER 
+
+
+model User {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  phone String? @unique
+  password String
+  name String?
+  image String?
+  email String? @unique
+  sex Boolean?
+  birthDay DateTime?
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+
+  active Active @default(PENDING)
+  role Role @default(USER)
+  rank Rank @default(BRONZE)
+  point Int @default(0)
+
+  voucherUserIdList String[] @default([])
+  addressIdList String[] @default([])
+  orderIdList String[] @default([])
+  reviewIdList String[] @default([])
+
+  shopFollowIdList String[] @default([])
+  productFavoriteIdList String[] @default([])
+  notificationIdList String[] @default([])
+
+  reportIdList String[] @default([])
+
+  shopId String?
+}
+
+model Address {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  phone String
+  city String
+  district String
+  ward String
+  apartment String
+  userId String
+  status StatusAddress @default(ACTIVE)
+}
+
+model Shop {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  image String
+  describeShop String
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+  active Boolean @default(true)
+  userId String
+
+  userFollowIdList String[] @default([])
+  productIdList String[] @default([])
+  orderIdList String[] @default([])
+}
+
+model Notification {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  describe String
+  image String
+  status StatusNotification @default(UNREAD)
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+}
+
+//VOUCHER 
+
+
+model Voucher {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  code String @unique
+  decrease Float   
+  quantity Int
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+  voucherUserIdList String[] @default([])
+  expired DateTime 
+
+}
+
+model VoucherUser {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String 
+  voucherId String 
+  active Boolean @default(true)
+}
+
+
+
+//CATEGORY
+
+model Category {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  image String
+  previousId String?
+  originIdList String[] @default([])
+  brandIdList String[] @default([])
+  styleIdList String[] @default([])
+  optionIdList String[] @default([])
+  productIdList String[] @default([])
+
+}
+
+model Origin {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+}
+
+model Brand {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  logo String
+  categoryId String
+}
+
+model Material {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  categoryId String
+}
+
+model Styles {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  categoryId String
+}
+
+model Type{
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  categoryId String
+}
+
+
+//PRODUCT
+
+model Product {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  active Boolean @default(true)
+
+  materialId String
+  originlId String
+  stylelId String
+  brandlId String
+
+  materialOrther String?
+  originlOrther String?
+  stylelOrther String?
+  brandlOrther String?
+
+  describe String
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+  price Float 
+  image String[] @default([])
+
+  reportIdList String[] @default([])
+  userFavoriteIdList String[] @default([])
+  productCIdList String[] @default([])
+  reviewIdList String[] @default([])
+
+  //{"color":"[red,green,blue]","size":"[M,L,XL]"}
+  typeList Json
+
+  categoryId String
+  shopId String
+
+}
+
+
+model ProductDetail {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  price Float
+  name String
+  image String
+  quantity Int
+  numberSold Int
+
+  productId String
+  discountIdList String[] @default([])
+  orderDetailIdList String[] @default([])
+
+  //[red,M] 
+  typeAttribute String[] @default([])
+}
+
+
+//DISCOUNT 
+
+model Discount {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  percent Float
+  name String
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+  expired DateTime
+  productDetailId String
+}
+
+
+//ORDER
+
+model Orders {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  createDate DateTime @default(now())
+  updateDate DateTime @default(now())
+
+  orderDetailIdList String[] @default([])
+  userId String
+  shopId String
+  voucherId String?
+
+}
+
+model OrderDetail {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  price Float
+  reduce Float
+  quantity Int
+  priceShip Float
+
+  orderId String
+  productDetailId String
+}
+
+//Review
+
+model Review {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  content String
+  rate Float
+
+  userId String?
+  productId String?
+}
+
+//BANNER
+
+model Banner {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  image String
+  link String
+}
+
+//REPORT
+model ReportProduct {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId String
+  productId String
+  describe String
+}
+
+
+
+
+
