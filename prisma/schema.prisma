@@ -46,10 +46,10 @@ model User {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   phone String? @unique
   password String
-  name String?
-  image String?
+  name String? 
+  image String? 
   email String? @unique
-  sex Boolean?
+  sex Boolean? 
   birthDay DateTime?
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
@@ -59,7 +59,6 @@ model User {
   rank Rank @default(BRONZE)
   point Int @default(0)
 
-  voucherUserIdList String[] @default([])
   addressIdList String[] @default([])
   orderIdList String[] @default([])
   reviewIdList String[] @default([])
@@ -71,6 +70,9 @@ model User {
   reportIdList String[] @default([])
 
   shopId String?
+
+  @@map("user")
+
 }
 
 model Address {
@@ -83,11 +85,14 @@ model Address {
   apartment String
   userId String
   status StatusAddress @default(ACTIVE)
+
+  @@map("address")
+
 }
 
 model Shop {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   image String
   describeShop String
   createDate DateTime @default(now())
@@ -98,6 +103,10 @@ model Shop {
   userFollowIdList String[] @default([])
   productIdList String[] @default([])
   orderIdList String[] @default([])
+  bannerIdList String[] @default([])
+  discountIdList String[] @default([])
+
+  @@map("shop")
 }
 
 model Notification {
@@ -107,30 +116,9 @@ model Notification {
   status StatusNotification @default(UNREAD)
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
+
+  @@map("notification")
 }
-
-//VOUCHER 
-
-
-model Voucher {
-  id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  code String @unique
-  decrease Float   
-  quantity Int
-  createDate DateTime @default(now())
-  updateDate DateTime @default(now())
-  voucherUserIdList String[] @default([])
-  expired DateTime 
-
-}
-
-model VoucherUser {
-  id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String 
-  voucherId String 
-  active Boolean @default(true)
-}
-
 
 
 //CATEGORY
@@ -146,36 +134,47 @@ model Category {
   optionIdList String[] @default([])
   productIdList String[] @default([])
 
+  @@map("category")
 }
 
 model Origin {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
+
+  @@map("origin")
 }
 
 model Brand {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   logo String
   categoryId String
+
+  @@map("brand")
 }
 
 model Material {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   categoryId String
+
+  @@map("material")
 }
 
 model Styles {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   categoryId String
+
+  @@map("styles")
 }
 
 model Type{
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   categoryId String
+
+  @@map("type")
 }
 
 
@@ -183,13 +182,13 @@ model Type{
 
 model Product {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String 
   active Boolean @default(true)
 
-  materialId String
-  originlId String
-  stylelId String
-  brandlId String
+  materialId String?
+  originlId String?
+  stylelId String?
+  brandlId String?
 
   materialOrther String?
   originlOrther String?
@@ -200,7 +199,7 @@ model Product {
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
   price Float 
-  image String[] @default([])
+  image String
 
   reportIdList String[] @default([])
   userFavoriteIdList String[] @default([])
@@ -212,6 +211,8 @@ model Product {
 
   categoryId String
   shopId String
+
+  @@map("product")
 
 }
 
@@ -230,6 +231,8 @@ model ProductDetail {
 
   //[red,M] 
   typeAttribute String[] @default([])
+
+  @@map("productDetail")
 }
 
 
@@ -243,6 +246,9 @@ model Discount {
   updateDate DateTime @default(now())
   expired DateTime
   productDetailId String
+  shopId String
+
+  @@map("discount")
 }
 
 
@@ -256,8 +262,8 @@ model Orders {
   orderDetailIdList String[] @default([])
   userId String
   shopId String
-  voucherId String?
 
+  @@map("orders")
 }
 
 model OrderDetail {
@@ -269,6 +275,8 @@ model OrderDetail {
 
   orderId String
   productDetailId String
+
+  @@map("orderDetail")
 }
 
 //Review
@@ -280,6 +288,8 @@ model Review {
 
   userId String?
   productId String?
+
+  @@map("review")
 }
 
 //BANNER
@@ -288,6 +298,9 @@ model Banner {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   image String
   link String
+  shopId String
+
+  @@map("banner")
 }
 
 //REPORT
@@ -296,6 +309,8 @@ model ReportProduct {
   userId String
   productId String
   describe String
+
+  @@map("reportProduct")
 }
 
 

@@ -8,12 +8,10 @@ const apiKeyCheck = (req) => {
         process.env.OPEN_API_KEY === req.query.apiKey &&
         (req.path.indexOf('/user') === 0 ||
             req.path.indexOf('/auth') === 0 ||
-            req.path.indexOf('/project') === 0 ||
-            req.path.indexOf('/project-news') === 0 ||
+            req.path.indexOf('/admin') === 0 ||
             /\/user\/+[0-9]+/gm.test(req.path) ||
             /\/auth\/+[0-9]+/gm.test(req.path) ||
-            /\/project\/+[0-9]+/gm.test(req.path) ||
-            /\/project-news\/+[0-9]+/gm.test(req.path))
+            /\/admin\/+[0-9]+/gm.test(req.path))
     ) {
         return true;
     }

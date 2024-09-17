@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
 import httpStatus from 'http-status';
@@ -17,7 +18,8 @@ app.use(
 );
 app.use(express.static('static/assets'));
 app.use(express.static('uploads'));
-
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(function (err, req, res, next) {
     console.error(err.stack);
     return res.set(err.headers).status(err.status).json({ message: err.message });
