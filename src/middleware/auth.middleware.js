@@ -39,7 +39,7 @@ export const isAuth = async (req, res, next) => {
             return res.status(httpStatus.UNAUTHORIZED).json({ message: httpStatus['401_MESSAGE'] });
         }
 
-        req.user = await UserRepository.getUserByPhone(verified.phone);
+        req.user = await UserRepository.findByPhone(verified.phone);
 
         return next();
     } catch (err) {

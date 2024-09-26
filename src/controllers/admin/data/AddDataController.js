@@ -1,21 +1,16 @@
 import { isAuth } from '../../../middleware/auth.middleware.js';
 import AddDataService from '../../../services/admin/data/AddDataService.js';
+import AuthService from '../../../services/auth/AuthService.js';
+import httpStatus from 'http-status';
+
 class AddDataController {
     initRoutes(app) {
-        app.get('/admin/add/category', isAuth, this.addCategory);
-    }
-
-    //call function before call Api
-    isAdmin(req) {
-        if (req.user.role == 'ADMIN') {
-            return true;
-        }
-        return false;
+        app.post('/admin/add/category', isAuth, this.addCategory);
     }
 
     async addCategory(req, res) {
         try {
-            if (this.isAdmin(req)) {
+            if (AuthService.isAdmin(req)) {
                 const projects = await AddDataService.saveCategory(req);
                 return res.status(httpStatus.OK).json(projects);
             } else {

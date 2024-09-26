@@ -43,6 +43,13 @@ class AuthService {
         });
         return token;
     }
+
+    async isAdmin(req) {
+        if (req.user.role == 'ADMIN') {
+            return true;
+        }
+        return false;
+    }
 }
 
 export default new AuthService();
