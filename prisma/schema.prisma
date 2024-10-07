@@ -13,7 +13,6 @@ datasource db {
 
 enum Active {
   BLOCK
-  PENDING
   ACTIVE
 }
 
@@ -48,13 +47,13 @@ model User {
   password String
   name String? 
   image String? 
-  email String? @unique
+  email String? @default("no-email")
   sex Boolean? 
   birthDay DateTime?
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
 
-  active Active @default(PENDING)
+  active Active @default(ACTIVE)
   role Role @default(USER)
   rank Rank @default(BRONZE)
   point Int @default(0)

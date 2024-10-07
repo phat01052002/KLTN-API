@@ -25,7 +25,7 @@ class AuthController {
             } else if (dataRes == 'Account have already exist') {
                 return res.status(httpStatus.CONFLICT).json({ message: 'Account have already exist' });
             } else {
-                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Register Fail ' });
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Account creation fail ' });
             }
         } catch (e) {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Account creation fail' });
@@ -41,7 +41,7 @@ class AuthController {
             if (dataRes == 'Account is inActive') {
                 return res.status(httpStatus.OK).json({ message: 'Account is inActive' });
             }
-            return res.status(httpStatus.OK).json({ accessToken: dataRes });
+            return res.status(httpStatus.OK).json({ message: 'Login success', accessToken: dataRes });
         } catch (e) {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Login Fail' });
         }

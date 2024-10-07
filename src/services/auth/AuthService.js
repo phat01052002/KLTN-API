@@ -15,7 +15,8 @@ class AuthService {
             //
             await UserRepository.save(req);
             return 'Success';
-        } catch {
+        } catch(e) {
+            console.log(e.message)
             return 'Fail';
         }
     }
