@@ -8,16 +8,20 @@ class UserRepository extends BaseRepository {
         this.db = this.prisma.user;
     }
 
-    findByPhone(phone){
+    findByEmail(email) {
         return this.db.findUnique({
-            where: { phone: phone },
+            where: { email: email },
         });
     }
 
-    findUserByPhoneAndPassword(phone, password) {
+    findUserByEmailAndPassword(email, password) {
         return this.db.findUnique({
-            where: { phone: phone, password: password },
+            where: { email: email, password: password },
         });
+    }
+
+    findByRefreshToken(refreshToken) {
+        return this.db.findFirst({ where: { refreshToken: refreshToken } });
     }
 }
 

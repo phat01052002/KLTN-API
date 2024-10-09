@@ -1,11 +1,24 @@
 import httpStatus from 'http-status';
+import nodemailer from 'nodemailer';
 import md5 from 'md5';
 import { isAuth } from '../../middleware/auth.middleware.js';
 import UserService from '../../services/UserService.js';
+import UserRepository from '../../repositories/UserRepository.js';
 class UserController {
     initRoutes(app) {
         app.get('/user/get-role', isAuth, this.getRole);
         app.get('/user/get-user', isAuth, this.getUser);
+        app.get('/user/test', this.send);
+        app.post('/user/logout', isAuth, this.logout);
+    }
+    async send(req, res) {}
+    async logout(req, res) {
+        try {
+            await UserRepository.update(req.user.id, { refreshToken: '' });
+            return res.status(httpStatus.OK).json({ message: 'Success' });
+        } catch (e) {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
     }
     async getRole(req, res) {
         try {
@@ -17,7 +30,7 @@ class UserController {
 
     async getUser(req, res) {
         try {
-            const user = await UserService.getUser(req.user.phone);
+            const user = await UserService.getUser(req.user.email);
             if (user == 'Fail') {
                 return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
             }

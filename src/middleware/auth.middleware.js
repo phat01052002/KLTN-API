@@ -39,10 +39,22 @@ export const isAuth = async (req, res, next) => {
             return res.status(httpStatus.UNAUTHORIZED).json({ message: httpStatus['401_MESSAGE'] });
         }
 
-        req.user = await UserRepository.findByPhone(verified.phone);
+        req.user = await UserRepository.findByEmail(verified.email);
 
         return next();
     } catch (err) {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: httpStatus['401_MESSAGE'] });
     }
+};
+export const generateRefreshToken = (user) => {
+    return jsonwebtoken.sign(user, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: 60*60*72,
+    });
+};
+
+export const generateAccessToken = (email) => {
+    const token = jsonwebtoken.sign({ email: email }, process.env.TOKEN_SECRET, {
+        expiresIn: 60 * 30,
+    });
+    return token;
 };

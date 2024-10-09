@@ -1,9 +1,9 @@
 import UserRepository from '../repositories/UserRepository.js';
 
 class UserService {
-    async getUser(phone) {
+    async getUser(email) {
         try {
-            const user = await UserRepository.findByPhone(phone);
+            const user = await UserRepository.findByEmail(email);
             if (user) {
                 return {
                     phone: user.phone,

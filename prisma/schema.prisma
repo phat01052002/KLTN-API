@@ -11,9 +11,10 @@ datasource db {
 }
 
 
-enum Active {
+enum Status {
   BLOCK
   ACTIVE
+  PENDING
 }
 
 enum Role {
@@ -43,17 +44,19 @@ enum StatusAddress {
 
 model User {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  phone String? @unique
+  phone String?
   password String
   name String? 
   image String? 
-  email String? @default("no-email")
+  email String? @unique
   sex Boolean? 
   birthDay DateTime?
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
-
-  active Active @default(ACTIVE)
+  code Int?
+  codeExpiry DateTime?
+  refreshToken String?
+  status Status @default(PENDING)
   role Role @default(USER)
   rank Rank @default(BRONZE)
   point Int @default(0)
