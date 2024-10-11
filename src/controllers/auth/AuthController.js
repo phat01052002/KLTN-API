@@ -212,7 +212,7 @@ class AuthController {
                     }
                 });
             } else if (registerRes == 'Account have already exist') {
-                return res.status(httpStatus.CONFLICT).json({ message: 'Account have already exist' });
+                return res.status(httpStatus.OK).json({ message: 'Account have already exist' });
             } else {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Account creation fail ' });
             }
