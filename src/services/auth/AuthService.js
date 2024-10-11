@@ -24,6 +24,14 @@ class AuthService {
             return 'Fail';
         }
     }
+    async registerGmail(req) {
+        try {
+            req.body.password = md5(req.body.password);
+            //
+            req.body.status = 'ACTIVE';
+            return await UserRepository.save(req);
+        } catch {}
+    }
     async register_2fa(req) {
         try {
             const user = await UserRepository.findByEmail(req.body.email);

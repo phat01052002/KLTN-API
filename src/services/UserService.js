@@ -29,5 +29,35 @@ class UserService {
             return 'Fail';
         }
     }
+
+    async updateUserInfo(req) {
+        try {
+            const user = await UserRepository.findByEmail(req.user.email);
+            if (user) {
+                const new_user = await UserRepository.update(user.id, req.body);
+                return {
+                    phone: new_user.phone,
+                    name: new_user.name,
+                    image: new_user.image,
+                    email: new_user.email,
+                    sex: new_user.sex,
+                    birthDay: new_user.birthDay,
+                    role: new_user.role,
+                    rank: new_user.rank,
+                    point: new_user.point,
+                    addressIdList: new_user.addressIdList,
+                    orderIdList: new_user.orderIdList,
+                    reviewIdList: new_user.reviewIdList,
+                    shopFollowIdList: new_user.shopFollowIdList,
+                    productFavoriteIdList: new_user.productFavoriteIdList,
+                    notificationIdList: new_user.notificationIdList,
+                    reportIdList: new_user.reportIdList,
+                    shopId: new_user.shopId,
+                };
+            }
+        } catch {
+            return 'Fail';
+        }
+    }
 }
 export default new UserService();

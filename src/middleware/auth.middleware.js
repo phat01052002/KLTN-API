@@ -58,3 +58,4 @@ export const generateAccessToken = (email) => {
     });
     return token;
 };
+

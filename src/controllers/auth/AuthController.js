@@ -2,7 +2,7 @@ import httpStatus from 'http-status';
 import md5 from 'md5';
 import jsonwebtoken from 'jsonwebtoken';
 
-import { generateAccessToken, generateRefreshToken } from '../../middleware/auth.middleware.js';
+import { generateAccessToken, generateRefreshToken, isAuth } from '../../middleware/auth.middleware.js';
 import UserRepository from '../../repositories/UserRepository.js';
 import AuthService from '../../services/auth/AuthService.js';
 import nodemailer from 'nodemailer';
@@ -15,6 +15,36 @@ class AuthController {
         app.post('/auth/forget-password', this.forgetPassword);
         app.post('/auth/refreshToken', this.getNewAccessToken);
         app.post('/auth/require-otp', this.requireOtp);
+        app.post('/auth/login-gmail', this.loginGmail);
+        app.post('/auth/forget-password-2fa', this.forgetPassword_2fa);
+        app.post('/auth/verify-otp', this.verifyOtp);
+        app.post('/auth/change-password', isAuth, this.changePassword);
+    }
+    async changePassword(req, res) {
+        try {
+            await UserRepository.update(req.user.id, { password: md5(req.body.password) });
+            return res.status(httpStatus.OK).json({ message: 'Success' });
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async verifyOtp(req, res) {
+        try {
+            const user = await UserRepository.findByEmail(req.body.email);
+            if (user) {
+                if (user.codeExpiry < new Date().getTime()) {
+                    return res.status(httpStatus.OK).json({ message: 'Code expery' });
+                }
+                if (String(user.code) == req.body.code) {
+                    await UserRepository.update(user.id, { codeExpiry: null, code: null, status: 'ACTIVE' });
+                    return res
+                        .status(httpStatus.OK)
+                        .json({ message: 'Success', token: generateAccessToken(req.body.email) });
+                }
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
     }
     async requireOtp(req, res) {
         try {
@@ -74,6 +104,59 @@ class AuthController {
 
     async forgetPassword(req, res) {
         try {
+            const user = await UserRepository.findByEmail(req.body.email);
+            if (user) {
+                const fiveMinutesFromNow = new Date(new Date().getTime() + 5 * 60 * 1000);
+                const randomOTP = Math.floor(100000 + Math.random() * 900000);
+                await UserRepository.update(user.id, { code: randomOTP, codeExpiry: fiveMinutesFromNow });
+                const transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: 'chauthuanphat10@gmail.com',
+                        pass: process.env.GOOGLE_PASS,
+                    },
+                });
+                const mailOptions = {
+                    from: 'chauthuanphat10@gmail.com',
+                    to: req.body.email,
+                    subject: 'Your OTP ',
+                    text: String(randomOTP),
+                };
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        res.status(500).send(error.message);
+                    } else {
+                        res.status(httpStatus.OK).json({ message: 'Email sent successfully' });
+                    }
+                });
+            } else {
+                return res.status(httpStatus.OK).json({ message: 'User not found' });
+            }
+        } catch (e) {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async forgetPassword_2fa(req, res) {
+        try {
+            const register_2faRes = await AuthService.register_2fa(req);
+            if (register_2faRes == 'Fail') {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+            if (register_2faRes == 'Code expery') {
+                return res.status(httpStatus.CONFLICT).json({ message: 'Code expery' });
+            }
+            if (register_2faRes == 'Success') {
+                const user = await UserRepository.findByEmail(req.body.email);
+                if (user) {
+                    const refreshToken = generateRefreshToken(user);
+                    const accessToken = generateAccessToken(user.email);
+                    await UserRepository.update(user.id, { refreshToken: refreshToken });
+                    return res
+                        .status(httpStatus.OK)
+                        .json({ message: 'Success', accessToken: accessToken, refreshToken: refreshToken });
+                }
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
         } catch (e) {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
         }
@@ -154,6 +237,31 @@ class AuthController {
                 accessToken: dataRes.accessToken,
             });
         } catch (e) {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Login Fail' });
+        }
+    }
+
+    async loginGmail(req, res) {
+        try {
+            const dataRes = await AuthService.login(req.body.email, req.body.password);
+            if (dataRes == 'Phone or password is incorrect') {
+                const user = await AuthService.registerGmail(req);
+                const accessToken = generateAccessToken(user.email);
+                const refreshToken = generateRefreshToken(user);
+                await UserRepository.update(user.id, { refreshToken: refreshToken });
+                return res.status(httpStatus.OK).json({
+                    message: 'Login success',
+                    refreshToken: accessToken,
+                    accessToken: accessToken,
+                });
+            }
+            return res.status(httpStatus.OK).json({
+                message: 'Login success',
+                refreshToken: dataRes.refreshToken,
+                accessToken: dataRes.accessToken,
+            });
+        } catch (e) {
+            console.log(e.message);
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Login Fail' });
         }
     }
