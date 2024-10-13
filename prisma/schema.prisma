@@ -197,11 +197,11 @@ model Product {
   stylelOrther String?
   brandlOrther String?
 
-  describe String
-  createDate DateTime @default(now())
-  updateDate DateTime @default(now())
-  price Float 
-  image String
+  describe String?
+  createDate DateTime? @default(now())
+  updateDate DateTime? @default(now())
+  price Float?
+  image String?
 
   reportIdList String[] @default([])
   userFavoriteIdList String[] @default([])
@@ -209,10 +209,10 @@ model Product {
   reviewIdList String[] @default([])
 
   //{"color":"[red,green,blue]","size":"[M,L,XL]"}
-  typeList Json
+  options Json?
 
-  categoryId String
-  shopId String
+  categoryId String?
+  shopId String?
 
   @@map("product")
 
@@ -232,7 +232,8 @@ model ProductDetail {
   orderDetailIdList String[] @default([])
 
   //[red,M] 
-  typeAttribute String[] @default([])
+  option1 String?
+  option2 String?
 
   @@map("productDetail")
 }
