@@ -2,7 +2,6 @@ node_modules
 # Keep environment variables out of version control
 
 prisma/migrations/
-/static/assets/uploads/
-/uploads/
+
 
 # misc
