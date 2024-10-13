@@ -6,4 +6,3 @@ prisma/migrations/
 /uploads/
 
 # misc
-.env
