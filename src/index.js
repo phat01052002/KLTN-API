@@ -6,7 +6,7 @@ import { initApplication } from './config/index.js';
 import path from 'path';
 
 const app = express();
-const port = process.env.PORT || 3038;
+const port = process.env.PORT || 3035;
 
 app.use(
     cors({
