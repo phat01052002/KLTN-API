@@ -2,22 +2,37 @@ import httpStatus from 'http-status';
 import nodemailer from 'nodemailer';
 import md5 from 'md5';
 import { isAuth } from '../../middleware/auth.middleware.js';
-import UserService from '../../services/UserService.js';
+import UserService from '../../services/user/UserService.js';
 import UserRepository from '../../repositories/UserRepository.js';
 import { publicUploadFile } from '../../middleware/upload.middleware.js';
+import ShopService from '../../services/shop/ShopService.js';
 
 class UserController {
     initRoutes(app) {
         app.get('/user/get-role', isAuth, this.getRole);
         app.get('/user/get-user', isAuth, this.getUser);
-        app.get('/user/test', this.send);
         app.post('/user/logout', isAuth, this.logout);
         app.post('/user/update-user-info', isAuth, this.updateUserInfo);
         app.post('/user/update-image', isAuth, this.updateImage);
-        app.post('/user/update-address', isAuth, this.updateAddress);
+        app.post('/user/register-shop', isAuth, this.registerShop);
     }
-    async send(req, res) {}
-    async updateAddress(req, res) {}
+    async registerShop(req, res) {
+        try {
+            const resRegisterShop = await ShopService.register(req);
+            console.log(resRegisterShop);
+            if (resRegisterShop == 'Fail') {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            } else if (resRegisterShop == 'Shop name already exits') {
+                return res.status(httpStatus.CONFLICT).json({ message: 'Shop name already exits' });
+            } else if (resRegisterShop == 'User already exits') {
+                return res.status(httpStatus.CONFLICT).json({ message: 'User already exits' });
+            } else {
+                return res.status(httpStatus.OK).json({ message: 'Success Shop Create', shopId: resRegisterShop.id });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
     async updateImage(req, res) {
         try {
             publicUploadFile(req, res, async function (err) {

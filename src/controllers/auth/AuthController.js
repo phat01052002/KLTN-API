@@ -188,7 +188,6 @@ class AuthController {
     }
     async register(req, res) {
         try {
-            console.log(req.body);
             const registerRes = await AuthService.register(req);
             if (typeof registerRes === 'number') {
                 const transporter = nodemailer.createTransport({
@@ -217,7 +216,6 @@ class AuthController {
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Account creation fail ' });
             }
         } catch (e) {
-            console.log(e.message);
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
         }
     }
@@ -261,7 +259,6 @@ class AuthController {
                 accessToken: dataRes.accessToken,
             });
         } catch (e) {
-            console.log(e.message);
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Login Fail' });
         }
     }
