@@ -6,6 +6,10 @@ class ProvinceController {
         app.get('/province', this.getCity);
         app.get('/province/district/:id', this.getDistrict);
         app.get('/province/ward/:id', this.getWard);
+        app.get('/test', this.test);
+    }
+    async test(req, res) {
+        return res.status(httpStatus.OK).json({ message: 'HELLO KLTN' });
     }
     async getCity(req, res) {
         try {
