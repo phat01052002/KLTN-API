@@ -95,8 +95,10 @@ model Address {
 model Shop {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
-  image String
-  describeShop String
+  image String?
+  describeShop String?
+  addressShop String
+  phoneShop String
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
   active Boolean @default(true)
