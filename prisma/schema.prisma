@@ -81,9 +81,9 @@ model Address {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   name String
   phone String
-  city String
-  district String
-  ward String
+  city Json
+  district Json
+  ward Json
   apartment String
   userId String
   status StatusAddress @default(ACTIVE)
