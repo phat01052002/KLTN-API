@@ -229,11 +229,13 @@ class AuthController {
             if (dataRes == 'Account is inActive') {
                 return res.status(httpStatus.OK).json({ message: 'Account is inActive' });
             }
-            return res.status(httpStatus.OK).json({
-                message: 'Login success',
-                refreshToken: dataRes.refreshToken,
-                accessToken: dataRes.accessToken,
-            });
+            if (dataRes) {
+                return res.status(httpStatus.OK).json({
+                    message: 'Login success',
+                    refreshToken: dataRes.refreshToken,
+                    accessToken: dataRes.accessToken,
+                });
+            }
         } catch (e) {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Login Fail' });
         }
