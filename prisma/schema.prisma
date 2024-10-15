@@ -226,7 +226,7 @@ model ProductDetail {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   price Float
   name String
-  image String
+  images String[] @default([])
   quantity Int
   numberSold Int
 

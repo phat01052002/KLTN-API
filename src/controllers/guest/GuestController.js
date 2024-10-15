@@ -1,17 +1,33 @@
+import CategoryRepository from '../../repositories/CategoryRepository.js';
 import ProductDetailRepository from '../../repositories/ProductDetailRepository.js';
 import GuestService from '../../services/GuestService.js';
+import httpStatus from 'http-status';
 
 class GuestController {
     initRoutes(app) {
         app.get('/api/product/:id', this.findProductById); // Không yêu cầu authenticate
         app.get('/api/product-detail-by-product/:productId', this.findProductDetailByProductId); // Không yêu cầu authenticate
+        app.get('/api/category/:categoryId', this.findCategoryById);
         app.get('/api/product-detail/:productDetailId', this.findProductDetailById); // Không yêu cầu authenticate
+    }
+    async findCategoryById(req, res) {
+        try {
+            const categoryId = req.params.categoryId;
+            const category = await CategoryRepository.find(categoryId);
+            if (category) {
+                return res.status(httpStatus.OK).json({ category });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
     }
     async findProductDetailByProductId(req, res) {
         try {
             const productId = req.params.productId;
             const productDetail = await ProductDetailRepository.findByProductId(productId);
-            return res.status(200).json(productDetail);
+            return res.status(httpStatus.OK).json({ productDetail });
         } catch {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
         }
@@ -20,7 +36,7 @@ class GuestController {
         try {
             const productDetailId = req.params.productDetailId;
             const productDetail = await ProductDetailRepository.find(productDetailId);
-            return res.status(200).json(productDetail);
+            return res.status(httpStatus.OK).json({ productDetail });
         } catch {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
         }
@@ -38,7 +54,7 @@ class GuestController {
                 return res.status(404).json({ message: '404' });
             }
             if (product) {
-                return res.status(200).json(product);
+                return res.status(200).json({ product });
             } else {
                 return res.status(404).json({ message: 'Sản phẩm không tìm thấy' });
             }
