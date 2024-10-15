@@ -4,6 +4,8 @@ import cors from 'cors';
 import httpStatus from 'http-status';
 import { initApplication } from './config/index.js';
 import path from 'path';
+import { Server } from 'socket.io'; // Import socket.io
+import http from 'http'; // Import http
 
 const app = express();
 const port = process.env.PORT || 3035;
@@ -31,8 +33,30 @@ app.get('/', (req, res) => {
     });
 });
 
+/////////////// socket.io
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: '*', // Hoặc địa chỉ cụ thể của frontend, nếu cần
+        methods: ['GET', 'POST'],
+    },
+});
+
+// Lắng nghe sự kiện từ Socket.IO
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+    
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
+////////////////
 initApplication(app);
 
 app.listen(port, () => {
     console.log(`KLTN-API listening on port ${port}`);
 });
+
+
+
+

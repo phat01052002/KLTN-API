@@ -1,6 +1,59 @@
-import UserRepository from "../../repositories/UserRepository.js";
+import UserRepository from '../../repositories/UserRepository.js';
+import md5 from 'md5';
 
 class UserService {
+    async changePassword(req) {
+        try {
+            if (req.user.password == md5(req.body.passwordOld)) {
+                return 'Let sent otp';
+            } else {
+                return 'Incorrect password';
+            }
+        } catch {
+            return 'Fail';
+        }
+    }
+    async changePassword_2fa(req) {
+        try {
+            const user = await UserRepository.findByEmail(req.user.email);
+            if (user.codeExpiry > new Date().getTime()) {
+                if (req.body.code == String(user.code)) {
+                    const resUpdate = await UserRepository.update(req.user.id, {
+                        password: md5(req.body.passwordNew),
+                        codeExpiry: new Date().getTime(),
+                    });
+                    if (resUpdate) {
+                        return {
+                            phone: resUpdate.phone,
+                            name: resUpdate.name,
+                            image: resUpdate.image,
+                            email: resUpdate.email,
+                            sex: resUpdate.sex,
+                            birthDay: resUpdate.birthDay,
+                            role: resUpdate.role,
+                            defaultAddressId: resUpdate.defaultAddressId,
+                            rank: resUpdate.rank,
+                            point: resUpdate.point,
+                            addressIdList: resUpdate.addressIdList,
+                            orderIdList: resUpdate.orderIdList,
+                            reviewIdList: resUpdate.reviewIdList,
+                            shopFollowIdList: resUpdate.shopFollowIdList,
+                            productFavoriteIdList: resUpdate.productFavoriteIdList,
+                            notificationIdList: resUpdate.notificationIdList,
+                            reportIdList: resUpdate.reportIdList,
+                            shopId: resUpdate.shopId,
+                        };
+                    } else {
+                        return 'Fail';
+                    }
+                }
+            } else {
+                return 'Code expiry';
+            }
+        } catch (e) {
+            return 'Fail';
+        }
+    }
     async getUser(email) {
         try {
             const user = await UserRepository.findByEmail(email);
@@ -13,6 +66,7 @@ class UserService {
                     sex: user.sex,
                     birthDay: user.birthDay,
                     role: user.role,
+                    defaultAddressId: user.defaultAddressId,
                     rank: user.rank,
                     point: user.point,
                     addressIdList: user.addressIdList,

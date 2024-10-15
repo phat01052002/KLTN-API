@@ -48,7 +48,7 @@ export const isAuth = async (req, res, next) => {
 };
 export const generateRefreshToken = (user) => {
     return jsonwebtoken.sign(user, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: 60*60*72,
+        expiresIn: 60 * 60 * 72,
     });
 };
 
@@ -58,4 +58,3 @@ export const generateAccessToken = (email) => {
     });
     return token;
 };
-

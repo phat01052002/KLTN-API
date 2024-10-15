@@ -51,6 +51,7 @@ model User {
   email String? @unique
   sex Boolean? 
   birthDay DateTime?
+  defaultAddressId String? @default("")
   createDate DateTime @default(now())
   updateDate DateTime @default(now())
   code Int?

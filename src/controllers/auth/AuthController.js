@@ -75,7 +75,7 @@ class AuthController {
                         }
                     });
                 }
-                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'More require' });
+                return res.status(httpStatus.OK).json({ message: 'More require' });
             } else {
                 return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Account not found' });
             }

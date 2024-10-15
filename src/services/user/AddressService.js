@@ -14,6 +14,11 @@ class AddressService {
                     addressIdList: [...req.user.addressIdList, resSaveAddress.id],
                 });
             }
+            if (req.user.defaultAddressId == '') {
+                await UserRepository.update(req.user.id, {
+                    defaultAddressId: resSaveAddress.id,
+                });
+            }
             //
             return resSaveAddress;
         } catch (e) {
