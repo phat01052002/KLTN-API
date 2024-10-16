@@ -17,7 +17,13 @@ app.use(
         allowedHeaders: ['Authorization', 'Content-Type'],
         methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS', 'PATCH'],
     }),
+ 
 );
+app.use((req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    console.log(`Địa chỉ IP vừa truy cập: ${ip}`);
+    next(); // Tiếp tục xử lý yêu cầu
+});
 app.use(express.static('static/assets'));
 app.use(express.static('uploads'));
 app.use(bodyParser.json({ limit: '10mb' }));

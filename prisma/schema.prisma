@@ -191,14 +191,14 @@ model Product {
   active Boolean @default(true)
 
   materialId String?
-  originlId String?
-  stylelId String?
-  brandlId String?
+  originId String?
+  stylesId String?
+  brandId String?
 
   materialOrther String?
-  originlOrther String?
-  stylelOrther String?
-  brandlOrther String?
+  originOrther String?
+  stylesOrther String?
+  brandOrther String?
 
   describe String?
   createDate DateTime? @default(now())
