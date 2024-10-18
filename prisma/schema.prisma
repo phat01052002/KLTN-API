@@ -98,11 +98,11 @@ model Shop {
   name String @unique
   image String?
   describeShop String?
-  addressShop String
-  phoneShop String
-  createDate DateTime @default(now())
-  updateDate DateTime @default(now())
-  active Boolean @default(true)
+  addressShop String?
+  phoneShop String?
+  createDate DateTime? @default(now())
+  updateDate DateTime? @default(now())
+  active Boolean? @default(true)
   userId String
 
   userFollowIdList String[] @default([])
@@ -152,8 +152,6 @@ model Origin {
 model Brand {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
-  logo String
-  categoryId String
 
   @@map("brand")
 }
@@ -161,7 +159,6 @@ model Brand {
 model Material {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
-  categoryId String
 
   @@map("material")
 }
@@ -169,7 +166,6 @@ model Material {
 model Styles {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
   name String @unique
-  categoryId String
 
   @@map("styles")
 }
@@ -193,13 +189,12 @@ model Product {
   materialId String?
   originId String?
   stylesId String?
-  brandId String?
+  brandId Json?
 
   materialOrther String?
   originOrther String?
   stylesOrther String?
   brandOrther String?
-
   describe String?
   createDate DateTime? @default(now())
   updateDate DateTime? @default(now())
@@ -224,13 +219,13 @@ model Product {
 
 model ProductDetail {
   id   String   @id @default(auto()) @map("_id") @db.ObjectId
-  price Float
-  name String
+  price Float?
+  name String?
   images String[] @default([])
-  quantity Int
-  numberSold Int
+  quantity Int?
+  numberSold Int?
 
-  productId String
+  productId String?
   discountIdList String[] @default([])
   orderDetailIdList String[] @default([])
 

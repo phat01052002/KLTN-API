@@ -18,6 +18,62 @@ class UserController {
         app.post('/user/update-default-address', isAuth, this.updateDefaultAddress);
         app.post('/user/change-password', isAuth, this.changePassword);
         app.post('/user/change-password-2fa', isAuth, this.changePassword_2fa);
+        app.post('/user/follow-shop', isAuth, this.handleFollowShop);
+        app.post('/user/un-follow-shop', isAuth, this.handleUnFollowShop);
+        app.post('/user/favorite-product', isAuth, this.handleFavoriteProduct);
+        app.post('/user/un-favorite-product', isAuth, this.handleUnFavoriteProduct);
+    }
+    async handleUnFavoriteProduct(req, res) {
+        try {
+            const resFavorite = await UserService.unFavoriteProduct(req, req.body.productId);
+            if (resFavorite != 'Fail') {
+                return res.status(httpStatus.OK).json({ message: 'Success', user: resFavorite.user });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async handleFavoriteProduct(req, res) {
+        try {
+            const resFavorite = await UserService.favoriteProduct(req, req.body.productId);
+            if (resFavorite != 'Fail') {
+                return res.status(httpStatus.OK).json({ message: 'Success', user: resFavorite.user });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async handleUnFollowShop(req, res) {
+        try {
+            const resFollow = await UserService.unFollowShop(req, req.body.shopId);
+            if (resFollow != 'Fail') {
+                return res
+                    .status(httpStatus.OK)
+                    .json({ message: 'Success', user: resFollow.user, shop: resFollow.shop });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async handleFollowShop(req, res) {
+        try {
+            const resFollow = await UserService.followShop(req, req.body.shopId);
+            if (resFollow != 'Fail') {
+                return res
+                    .status(httpStatus.OK)
+                    .json({ message: 'Success', user: resFollow.user, shop: resFollow.shop });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
     }
     async changePassword(req, res) {
         try {

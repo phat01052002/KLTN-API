@@ -7,6 +7,10 @@ import StylesRepository from '../../repositories/StylesRepository.js';
 import ProductDetailRepository from '../../repositories/ProductDetailRepository.js';
 import GuestService from '../../services/GuestService.js';
 import httpStatus from 'http-status';
+import ShopRepository from '../../repositories/ShopRepository.js';
+import ShopService from '../../services/shop/ShopService.js';
+import ProductRepository from '../../repositories/ProductRepository.js';
+import { logger } from '../../index.js';
 
 class GuestController {
     initRoutes(app) {
@@ -18,17 +22,122 @@ class GuestController {
         app.get('/api/brand/:brandId', this.findBrandById);
         app.get('/api/styles/:stylesId', this.findStylesById);
         app.get('/api/origin/:originId', this.findOriginById);
+        app.get('/api/shop/:shopId', this.findShopById);
+        app.get('/api/shop/:shopId', this.findShopById);
+        app.get('/api/product-by-shop/:shopId', this.findProductByShop_Sorted);
+        app.post('/api/top-product-by-shop/:shopId', this.findProductTopByShop);
+        app.post('/api/product-many', this.findProduct);
+        app.post('/api/search-product-by-name', this.findProductByName);
+        app.get('/api/keyword-hot', this.findKeywordHot);
+        app.get('/api/product-similar/:productId/:take', this.findProductSimilar);
+    }
+    async findProductSimilar(req, res) {
+        try {
+            const productId = req.params.productId;
+            const take = req.params.take;
+
+            const productsSimilar = await GuestService.findProductSimilar(productId, parseInt(take));
+            if (productsSimilar != 'Fail') {
+                return res.status(httpStatus.OK).json({ message: 'Success', productsSimilar });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findKeywordHot(req, res) {
+        try {
+            const keywords = await GuestService.findKeywordHot(6);
+            if (keywords) {
+                return res.status(httpStatus.OK).json({ message: 'Success', keywords });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findProduct(req, res) {
+        try {
+            console.log(req.body);
+            const products = await GuestService.findProduct(req.body.take);
+            if (products == 'Fail') {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            } else {
+                return res.status(httpStatus.OK).json({ message: 'Success', products });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findProductByName(req, res) {
+        try {
+            const product = await GuestService.findProductByName(req);
+            if (product != 'Fail') {
+                if (product.length > 0 && req.body.name != '')
+                    logger.info({ message: `User searched for: ${req.body.name}`, timestamp: new Date() });
+                return res.status(httpStatus.OK).json({ message: 'Success', product });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+
+    async findProductTopByShop(req, res) {
+        try {
+            const shopId = req.params.shopId;
+            const topProducts = await GuestService.findProductsTopByShop(shopId, req.body.listProductsId);
+            if (topProducts != 'Fail') {
+                return res.status(httpStatus.OK).json({ message: 'Success', topProducts });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findProductByShop_Sorted(req, res) {
+        try {
+            const shopId = req.params.shopId;
+
+            const products = await GuestService.findProductsByShop_Sorted(shopId);
+            if (products == 'Fail') {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            } else {
+                return res.status(httpStatus.OK).json({ message: 'Success', products });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findShopById(req, res) {
+        try {
+            const shopId = req.params.shopId;
+            const shop = await ShopService.get(shopId);
+            if (shop != 'Fail') {
+                return res.status(httpStatus.OK).json({ message: 'Success', shop });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
     }
     async findMaterialById(req, res) {
         try {
             const materialId = req.params.materialId;
             const material = await MaterialRepository.find(materialId);
+            console.log(material);
             if (material) {
                 return res.status(httpStatus.OK).json({ message: 'Success', material });
             } else {
                 return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
             }
-        } catch {
+        } catch (e) {
+            console.err(e.message);
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
         }
     }
@@ -37,18 +146,18 @@ class GuestController {
             const brandId = req.params.brandId;
             const brand = await BrandRepository.find(brandId);
             if (brand) {
-                return res.status(httpStatus.OK).json({ message: 'Success', material });
+                return res.status(httpStatus.OK).json({ message: 'Success', brand });
             } else {
                 return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
             }
-        } catch {
+        } catch (e) {
             return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
         }
     }
     async findStylesById(req, res) {
         try {
             const stylesId = req.params.stylesId;
-            const styles = await stylesRepository.find(stylesId);
+            const styles = await StylesRepository.find(stylesId);
             if (styles) {
                 return res.status(httpStatus.OK).json({ message: 'Success', styles });
             } else {
@@ -106,7 +215,6 @@ class GuestController {
         const productId = req.params.id;
 
         try {
-            console.log(`Fetching product with ID: ${productId}`);
             const product = await GuestService.findProductById(productId);
             if (product == 'Product block') {
                 return res.status(404).json({ message: 'Product block' });

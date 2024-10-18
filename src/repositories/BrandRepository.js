@@ -7,7 +7,6 @@ class BrandRepository extends BaseRepository {
         super();
         this.db = this.prisma.brand;
     }
-
 }
 
 export default new BrandRepository();
