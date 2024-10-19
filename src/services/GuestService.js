@@ -32,10 +32,10 @@ class GuestService {
     ////////////////////////////////////
     async findProductById(productId) {
         try {
-            const product = await ProductRepository.find(productId);
+            const product = await ProductRepository.findById(productId);
             if (product) {
                 if (product.active) {
-                    return this.productDAO(product);
+                    return product;
                 } else {
                     return 'Product block';
                 }
@@ -106,7 +106,7 @@ class GuestService {
     }
     async findProductSimilar(productId, take) {
         try {
-            const productCurrent = await ProductRepository.findById(productId);
+            const productCurrent = await ProductRepository.find(productId);
             if (productCurrent) {
                 const productsSimilar = await ProductRepository.findProductSimilar(
                     productCurrent.categoryId,
@@ -160,6 +160,34 @@ class GuestService {
             }
         } else {
             return [];
+        }
+    }
+
+    async findProductTop() {
+        try {
+            const productsTop = await ProductRepository.findProductTop();
+            if (productsTop) {
+                return productsTop;
+            } else {
+                return 'Fail';
+            }
+        } catch (e) {
+            console.error(e.message);
+            return 'Fail';
+        }
+    }
+
+    async findProductByCategory(categoryId, take) {
+        try {
+            const products = await ProductRepository.findProductByCategory(categoryId, take);
+            if (products) {
+                return products;
+            } else {
+                return 'Fail';
+            }
+        } catch (e) {
+            console.log(e);
+            return 'Fail';
         }
     }
 }

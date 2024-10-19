@@ -226,7 +226,7 @@ model ProductDetail {
   numberSold Int?
 
   productId String?
-  discountIdList String[] @default([])
+  discountId String?
   orderDetailIdList String[] @default([])
 
   //[red,M] 

@@ -30,6 +30,47 @@ class GuestController {
         app.post('/api/search-product-by-name', this.findProductByName);
         app.get('/api/keyword-hot', this.findKeywordHot);
         app.get('/api/product-similar/:productId/:take', this.findProductSimilar);
+        app.get('/api/get-category', this.findAllCategory);
+        app.get('/api/get-product-top', this.findProductTop);
+        app.get('/api/get-product-by-category/:categoryId/:take', this.findProductByCategory);
+    }
+    async findProductByCategory(req, res) {
+        try {
+            const categoryId = req.params.categoryId;
+            const take = req.params.take;
+            const products = await GuestService.findProductByCategory(categoryId,take);
+            if (products != 'Fail') {
+                return res.status(httpStatus.OK).json({ message: 'Suucess', products });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findProductTop(req, res) {
+        try {
+            const productsTop = await GuestService.findProductTop();
+            if (productsTop == 'Fail') {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            } else {
+                return res.status(httpStatus.OK).json({ message: 'Success', productsTop });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
+    }
+    async findAllCategory(req, res) {
+        try {
+            const categorys = await CategoryRepository.findAll();
+            if (categorys) {
+                return res.status(httpStatus.OK).json({ message: 'Success', categorys });
+            } else {
+                return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+            }
+        } catch {
+            return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
+        }
     }
     async findProductSimilar(req, res) {
         try {
@@ -185,7 +226,7 @@ class GuestController {
             const categoryId = req.params.categoryId;
             const category = await CategoryRepository.find(categoryId);
             if (category) {
-                return res.status(httpStatus.OK).json({ category });
+                return res.status(httpStatus.OK).json({ message: 'Success', category });
             } else {
                 return res.status(httpStatus.BAD_GATEWAY).json({ message: 'Fail' });
             }
