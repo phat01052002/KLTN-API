@@ -133,6 +133,7 @@ model Category {
   name String
   image String
   previousId String?
+  categoryIdClIST String[] @default([])
   originIdList String[] @default([])
   brandIdList String[] @default([])
   styleIdList String[] @default([])
@@ -188,12 +189,12 @@ model Product {
 
   materialId String?
   originId String?
-  stylesId String?
+  styleId String?
   brandId Json?
 
   materialOrther String?
   originOrther String?
-  stylesOrther String?
+  styleOrther String?
   brandOrther String?
   describe String?
   createDate DateTime? @default(now())

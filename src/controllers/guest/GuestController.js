@@ -20,7 +20,7 @@ class GuestController {
         app.get('/api/product-detail/:productDetailId', this.findProductDetailById); // Không yêu cầu authenticate
         app.get('/api/material/:materialId', this.findMaterialById);
         app.get('/api/brand/:brandId', this.findBrandById);
-        app.get('/api/styles/:stylesId', this.findStylesById);
+        app.get('/api/style/:styleId', this.findStylesById);
         app.get('/api/origin/:originId', this.findOriginById);
         app.get('/api/shop/:shopId', this.findShopById);
         app.get('/api/shop/:shopId', this.findShopById);
@@ -38,7 +38,7 @@ class GuestController {
         try {
             const categoryId = req.params.categoryId;
             const take = req.params.take;
-            const products = await GuestService.findProductByCategory(categoryId,take);
+            const products = await GuestService.findProductByCategory(categoryId, take);
             if (products != 'Fail') {
                 return res.status(httpStatus.OK).json({ message: 'Suucess', products });
             } else {
@@ -197,8 +197,8 @@ class GuestController {
     }
     async findStylesById(req, res) {
         try {
-            const stylesId = req.params.stylesId;
-            const styles = await StylesRepository.find(stylesId);
+            const styleId = req.params.styleId;
+            const styles = await StylesRepository.find(styleId);
             if (styles) {
                 return res.status(httpStatus.OK).json({ message: 'Success', styles });
             } else {
